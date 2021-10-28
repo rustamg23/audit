@@ -1,9 +1,5 @@
-/**
- *Submitted for verification at Etherscan.io on 2021-09-13
-*/
-
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.6;
+pragma solidity 0.8.9;
 
 library Math {
     function max(uint256 a, uint256 b) internal pure returns (uint256) {
@@ -23,7 +19,7 @@ library PoolAddress {
         uint24 fee;
     }
 
-    function computeAddress(address factory, PoolKey memory key) internal pure returns (address pool) {
+    function computeAddress(address factory, PoolKey memory key) internal pure returns (address pool) { //вычисляется адрес 
         require(key.token0 < key.token1);
         pool = address(
             uint160(uint256(
@@ -75,10 +71,7 @@ interface PositionManagerV3 {
 
     function ownerOf(uint tokenId) external view returns (address);
     function transferFrom(address from, address to, uint tokenId) external;
-     function collect(CollectParams calldata params)
-        external
-        payable
-        returns (uint256 amount0, uint256 amount1);
+    function collect(CollectParams calldata params) external payable returns (uint amount0, uint amount1);
 }
 
 interface UniV3 {
@@ -90,7 +83,6 @@ interface UniV3 {
             uint160 secondsPerLiquidityInsideX128,
             uint32 secondsInside
         );
-    function liquidity() external view returns (uint128);
     function slot0() external view returns (uint160, int24, uint16, uint16, uint16, uint8, bool);
 }
 
@@ -113,7 +105,15 @@ contract StakingRewardsV3 {
     mapping(uint => uint) public tokenRewardPerLiquidityPaid;
     mapping(uint => uint) public rewards;
 
-    address immutable owner;
+    address public governance;
+    address public nextGovernance;
+    uint public delayGovernance;
+    
+    address public treasury;
+    address public nextTreasury;
+    uint public delayTreasury;
+    
+    uint32 constant DELAY = 1 days;
 
     struct time {
         uint32 timestamp;
@@ -135,10 +135,41 @@ contract StakingRewardsV3 {
     event Withdraw(address indexed sender, uint tokenId, uint liquidity);
     event Collect(address indexed sender, uint tokenId, uint amount0, uint amount1);
 
-    constructor(address _reward, address _pool) {
+    constructor(address _reward, address _pool, address _governance, address _treasury) {
         reward = _reward;
         pool = _pool;
-        owner = msg.sender;
+        governance = _governance;
+        treasury = _treasury;
+    }
+    
+    
+    modifier onlyGovernance() {
+        require(msg.sender == governance);
+        _;
+    }
+
+    function setGovernance(address _governance) external onlyGovernance {
+        nextGovernance = _governance;
+        delayGovernance = block.timestamp + DELAY;
+    }
+
+    function acceptGovernance() external {
+        require(msg.sender == nextGovernance && delayGovernance < block.timestamp);
+        governance = nextGovernance;
+    }
+
+    function setTreasury(address _treasury) external onlyGovernance {
+        nextTreasury = _treasury;
+        delayTreasury = block.timestamp + DELAY;
+    }
+
+    function commitTreasury() external onlyGovernance {
+        require(delayTreasury < block.timestamp);
+        treasury = nextTreasury;
+    }
+
+    function getTokenIdsLength(address _owner) external view returns (uint) {
+        return tokenIds[_owner].length;
     }
 
     function getTokenIds(address _owner) external view returns (uint[] memory) {
@@ -153,49 +184,28 @@ contract StakingRewardsV3 {
         if (totalLiquidity == 0) {
             return rewardPerLiquidityStored;
         }
-        return rewardPerLiquidityStored + ((lastTimeRewardApplicable() - lastUpdateTime) * rewardRate * PRECISION / totalLiquidity);
+        return rewardPerLiquidityStored + ((lastTimeRewardApplicable() - lastUpdateTime) * rewardRate * PRECISION / totalLiquidity); //!!!!!!!
     }
 
     function collect(uint tokenId) external {
         _collect(tokenId);
     }
 
-    function _collect(uint tokenId) internal {
-        if (owners[tokenId] != address(0)) {
-            PositionManagerV3.CollectParams memory _claim = PositionManagerV3.CollectParams(tokenId, owner, type(uint128).max, type(uint128).max);
-            (uint amount0, uint amount1) = nftManager.collect(_claim);
-            earned0 += amount0;
-            earned1 += amount1;
-            emit Collect(msg.sender, tokenId, amount0, amount1);
-        }
-    }
-
-    function earned(uint tokenId) public view returns (uint claimable, uint32 secondsInside, uint128 liquidity, uint forfeited) {
-        (int24 _tickLower, int24 _tickUpper) = (0,0);
-        (,,,,,_tickLower,_tickUpper,liquidity,,,,) = nftManager.positions(tokenId);
+    function earned(uint tokenId) public view returns (uint claimable, uint32 secondsInside, uint forfeited) {
+        (,,,,,int24 _tickLower,int24 _tickUpper,,,,,) = nftManager.positions(tokenId);
         (,,secondsInside) = UniV3(pool).snapshotCumulativesInside(_tickLower, _tickUpper);
-        (,int24 _tick,,,,,) = UniV3(pool).slot0();
-
 
         uint _liquidity = liquidityOf[tokenId];
-        if (_liquidity > 0) {
-            time memory _elapsed = elapsed[tokenId];
+        time memory _elapsed = elapsed[tokenId];
 
-            uint _maxSecondsElapsed = lastTimeRewardApplicable() - Math.min(_elapsed.timestamp, periodFinish);
-            if (_maxSecondsElapsed > 0) {
-                uint _secondsInside = Math.min(_maxSecondsElapsed, (secondsInside - _elapsed.secondsInside));
-
-                uint _reward = (_liquidity * (rewardPerLiquidity() - tokenRewardPerLiquidityPaid[tokenId]) / PRECISION);
-                uint _earned = _reward * _secondsInside / _maxSecondsElapsed;
-                forfeited = _reward - _earned;
-                claimable = _earned;
-            }
-
-            if (_tickLower > _tick || _tick > _tickUpper) {
-                forfeited = claimable;
-                claimable = 0;
-                liquidity = 0;
-            }
+        uint _maxSecondsElapsed = lastTimeRewardApplicable() - Math.min(_elapsed.timestamp, periodFinish);
+        if (_maxSecondsElapsed > 0) {
+            uint _secondsInside = Math.min(_maxSecondsElapsed, (secondsInside - _elapsed.secondsInside)); //!!!!
+    
+            uint _reward = (_liquidity * (rewardPerLiquidity() - tokenRewardPerLiquidityPaid[tokenId]) / PRECISION); //!!!!!!!
+            uint _earned = _reward * _secondsInside / _maxSecondsElapsed; //!!!!
+            forfeited = _reward - _earned;
+            claimable = _earned;
         }
         claimable += rewards[tokenId];
     }
@@ -214,10 +224,13 @@ contract StakingRewardsV3 {
         (,int24 _tick,,,,,) = UniV3(_pool).slot0();
         require(tickLower < _tick && _tick < tickUpper);
 
+        nftManager.transferFrom(msg.sender, address(this), tokenId);
+        
         owners[tokenId] = msg.sender;
         tokenIds[msg.sender].push(tokenId);
-
-        nftManager.transferFrom(msg.sender, address(this), tokenId);
+        
+        liquidityOf[tokenId] = _liquidity;
+        totalLiquidity += _liquidity;
 
         emit Deposit(msg.sender, tokenId, _liquidity);
     }
@@ -246,6 +259,16 @@ contract StakingRewardsV3 {
         _withdraw(tokenId);
     }
 
+    function _collect(uint tokenId) internal {
+        if (owners[tokenId] != address(0)) {
+            PositionManagerV3.CollectParams memory _claim = PositionManagerV3.CollectParams(tokenId, treasury, type(uint128).max, type(uint128).max); //!!!!!
+            (uint amount0, uint amount1) = nftManager.collect(_claim);
+            earned0 += amount0;
+            earned1 += amount1;
+            emit Collect(msg.sender, tokenId, amount0, amount1);
+        }
+    }
+
     function _withdraw(uint tokenId) internal {
         require(owners[tokenId] == msg.sender);
         uint _liquidity = liquidityOf[tokenId];
@@ -253,7 +276,7 @@ contract StakingRewardsV3 {
         totalLiquidity -= _liquidity;
         owners[tokenId] = address(0);
         _remove(tokenIds[msg.sender], tokenId);
-        nftManager.safeTransferFrom(address(this), msg.sender, tokenId);
+        nftManager.transferFrom(address(this), msg.sender, tokenId);
 
         emit Withdraw(msg.sender, tokenId, _liquidity);
     }
@@ -296,8 +319,7 @@ contract StakingRewardsV3 {
         notify(_reward);
     }
 
-    function notify(uint amount) public update(0) {
-        require(msg.sender == owner);
+    function notify(uint amount) public onlyGovernance update(0) {
         if (block.timestamp >= periodFinish) {
             rewardRate = amount / DURATION;
         } else {
@@ -314,21 +336,20 @@ contract StakingRewardsV3 {
         emit RewardAdded(msg.sender, amount);
     }
 
-    function refund() external {
-        require(msg.sender == owner);
+    function refund() external onlyGovernance {
         uint _forfeit = forfeit;
         forfeit = 0;
 
-        _safeTransfer(reward, owner, _forfeit);
+        _safeTransfer(reward, treasury, _forfeit);
     }
 
-    modifier update(uint tokenId) {
+    modifier update(uint tokenId) { //!!!!!!!!!!
         uint _rewardPerLiquidityStored = rewardPerLiquidity();
         uint _lastUpdateTime = lastTimeRewardApplicable();
         rewardPerLiquidityStored = _rewardPerLiquidityStored;
         lastUpdateTime = _lastUpdateTime;
         if (tokenId != 0) {
-            (uint _reward, uint32 _secondsInside, uint _liquidity, uint _forfeited) = earned(tokenId);
+            (uint _reward, uint32 _secondsInside, uint _forfeited) = earned(tokenId);
             tokenRewardPerLiquidityPaid[tokenId] = _rewardPerLiquidityStored;
             rewards[tokenId] = _reward;
             forfeit += _forfeited;
@@ -336,26 +357,19 @@ contract StakingRewardsV3 {
             if (elapsed[tokenId].timestamp < _lastUpdateTime) {
                 elapsed[tokenId] = time(uint32(_lastUpdateTime), _secondsInside);
             }
-
-            uint _currentLiquidityOf = liquidityOf[tokenId];
-            if (_currentLiquidityOf != _liquidity) {
-                totalLiquidity -= _currentLiquidityOf;
-                liquidityOf[tokenId] = _liquidity;
-                totalLiquidity += _liquidity;
-            }
         }
         _;
     }
 
     function _safeTransfer(address token, address to, uint256 value) internal {
         (bool success, bytes memory data) =
-            token.call(abi.encodeWithSelector(erc20.transfer.selector, to, value));
+            token.call(abi.encodeWithSelector(erc20.transfer.selector, to, value)); //!!!
         require(success && (data.length == 0 || abi.decode(data, (bool))));
     }
 
     function _safeTransferFrom(address token, address from, address to, uint256 value) internal {
         (bool success, bytes memory data) =
-            token.call(abi.encodeWithSelector(erc20.transferFrom.selector, from, to, value));
+            token.call(abi.encodeWithSelector(erc20.transferFrom.selector, from, to, value)); //!!!
         require(success && (data.length == 0 || abi.decode(data, (bool))));
     }
 }
