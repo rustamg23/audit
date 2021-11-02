@@ -8,7 +8,7 @@
 
 ### Scope of the Audit
 The scope of the audit includes the following smart contracts at:
-https://github.com/keep3r-network/StakingRewardsV3/blob/13ecc6966ae1a413f62224382bfd4d64b1a22351/contracts/StakingRewardsV3-1.sol
+ https://github.com/keep3r-network/StakingRewardsV3/blob/13ecc6966ae1a413f62224382bfd4d64b1a22351/contracts/StakingRewardsV3-1.sol
 The audited commit identifier is `13ecc6966ae1a413f62224382bfd4d64b1a22351`
 
 ## Security Assessment Methodology
