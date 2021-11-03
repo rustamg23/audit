@@ -43,8 +43,8 @@ Stage goal:
 Detection of inconsistencies with the desired model
 
 ### 4. Bug fixing & re-check.
-* Client fixes or comments on every issue.
-* Upon completion of the bug fixing, the auditors double-check each fix and set the statuses with a link to the fix.
+# Client fixes or comments on every issue.
+# Upon completion of the bug fixing, the auditors double-check each fix and set the statuses with a link to the fix.
 
 ```
 Stage goal:
@@ -57,24 +57,24 @@ Preparation of the final code version with all the fixes
 
 ### Classification of Issues
 
-* CRITICAL: Bugs leading to assets theft, fund access locking, or any other loss funds to be transferred to any party.
-* MAJOR: Bugs that can trigger a contract failure. Further recovery is possible only by manual modification of the contract state or replacement.
-* WARNINGS: Bugs that can break the intended contract logic or expose it to DoS attacks.
-* COMMENTS: Other issues and recommendations reported to/ acknowledged by the team.
+# CRITICAL: Bugs leading to assets theft, fund access locking, or any other loss funds to be transferred to any party.
+# MAJOR: Bugs that can trigger a contract failure. Further recovery is possible only by manual modification of the contract state or replacement.
+# WARNINGS: Bugs that can break the intended contract logic or expose it to DoS attacks.
+# COMMENTS: Other issues and recommendations reported to/ acknowledged by the team.
 
 Based on the feedback received from the Customer's team regarding the list of findings discovered by the Contractor, they are assigned the following statuses:
 
 ### Findings' breakdown status
 
-* FIXED: Recommended fixes have been made to the project code and no longer affect its security.
-* ACKNOWLEDGED: The project team is aware of this finding. Recommendations for this finding are planned to be resolved in the future. This finding does not affect the overall safety of the project.
-* NO ISSUE: Finding does not affect the overall safety of the project and does not violate the logic of its work
-* NEW: Waiting for project team's feedback on the finding discovered
+# FIXED: Recommended fixes have been made to the project code and no longer affect its security.
+# ACKNOWLEDGED: The project team is aware of this finding. Recommendations for this finding are planned to be resolved in the future. This finding does not affect the overall safety of the project.
+# NO ISSUE: Finding does not affect the overall safety of the project and does not violate the logic of its work
+# NEW: Waiting for project team's feedback on the finding discovered
 
 ## Report
 
 ### CRITICAL
-* the modifier update(uint tokenId) {...} is too long. The modifier should only be used for checks.
+# the modifier update(uint tokenId) {...} is too long. The modifier should only be used for checks.
 
 ### MAJOR
 # Reentrancy, amount0 and amount1 are not zeroed and can be summed forever:
