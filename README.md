@@ -75,13 +75,13 @@ Based on the feedback received from the Customer's team regarding the list of fi
 ## Report
 
 ## CRITICAL
-# the modifier update(uint tokenId) {...} is too long. The modifier should only be used for checks.
+### the modifier update(uint tokenId) {...} is too long. The modifier should only be used for checks.
 
 ## MAJOR
-# Reentrancy, amount0 and amount1 are not zeroed and can be summed forever:
+### Reentrancy, amount0 and amount1 are not zeroed and can be summed forever:
  * earned0 += amount0; (#84)
  * earned1 += amount1; (#85)
-# Multiplication on the result of a division:
+Multiplication on the result of a division:
  * return rewardPerLiquidityStored + ((lastTimeRewardApplicable() - lastUpdateTime) * rewardRate * PRECISION / totalLiquidity); (#73)
  * uint _reward = (_liquidity * (rewardPerLiquidity() - tokenRewardPerLiquidityPaid[tokenId]) / PRECISION); (#103)
  * uint _earned = _reward * _secondsInside / _maxSecondsElapsed; (#104)
@@ -90,7 +90,7 @@ Based on the feedback received from the Customer's team regarding the list of fi
 
 
 ## WARNING
-# Constructor lacks a zero-check on:
+### Constructor lacks a zero-check on:
  * reward = _reward; (#56)
  * pool = _pool; (#57)
   
