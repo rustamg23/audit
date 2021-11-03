@@ -15,9 +15,9 @@ Only one auditor analyzes this contract according to the methodology described b
 
 ### 1. Project architecture review.
 
-# An attempt to imagine project documentation.
-# General code review.
-# Reverse research and study of the architecture of the code based on the source code only.
+*  An attempt to imagine project documentation.
+*  General code review.
+*  Reverse research and study of the architecture of the code based on the source code only.
 ```
 Stage goals:
 # Building an independent view of the project's architecture and identifying logical flaws in the code.
