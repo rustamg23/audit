@@ -44,8 +44,8 @@ Detection of inconsistencies with the desired model
 ```
 
 ### 4. Bug fixing & re-check.
- Client fixes or comments on every issue.
- Upon completion of the bug fixing, the auditors double-check each fix and set the statuses with a link to the fix.
+* Client fixes or comments on every issue.
+* Upon completion of the bug fixing, the auditors double-check each fix and set the statuses with a link to the fix.
 
 ```
 Stage goal:
@@ -58,19 +58,19 @@ Preparation of the final code version with all the fixes
 
 ### Classification of Issues
 
-# CRITICAL: Bugs leading to assets theft, fund access locking, or any other loss funds to be transferred to any party.
-# MAJOR: Bugs that can trigger a contract failure. Further recovery is possible only by manual modification of the contract state or replacement.
-# WARNINGS: Bugs that can break the intended contract logic or expose it to DoS attacks.
-# COMMENTS: Other issues and recommendations reported to/ acknowledged by the team.
+* CRITICAL: Bugs leading to assets theft, fund access locking, or any other loss funds to be transferred to any party.
+* MAJOR: Bugs that can trigger a contract failure. Further recovery is possible only by manual modification of the contract state or replacement.
+* WARNINGS: Bugs that can break the intended contract logic or expose it to DoS attacks.
+* COMMENTS: Other issues and recommendations reported to/ acknowledged by the team.
 
 Based on the feedback received from the Customer's team regarding the list of findings discovered by the Contractor, they are assigned the following statuses:
 
 ### Findings' breakdown status
 
-# FIXED: Recommended fixes have been made to the project code and no longer affect its security.
-# ACKNOWLEDGED: The project team is aware of this finding. Recommendations for this finding are planned to be resolved in the future. This finding does not affect the overall safety of the project.
-# NO ISSUE: Finding does not affect the overall safety of the project and does not violate the logic of its work
-# NEW: Waiting for project team's feedback on the finding discovered
+* FIXED: Recommended fixes have been made to the project code and no longer affect its security.
+* ACKNOWLEDGED: The project team is aware of this finding. Recommendations for this finding are planned to be resolved in the future. This finding does not affect the overall safety of the project.
+* NO ISSUE: Finding does not affect the overall safety of the project and does not violate the logic of its work
+* NEW: Waiting for project team's feedback on the finding discovered
 
 ## Report
 
@@ -82,23 +82,23 @@ Based on the feedback received from the Customer's team regarding the list of fi
    earned0 += amount0; (#84)
    earned1 += amount1; (#85)
 # Multiplication on the result of a division:
-    return rewardPerLiquidityStored + ((lastTimeRewardApplicable() - lastUpdateTime) * rewardRate * PRECISION / totalLiquidity); (#73)
-    uint _reward = (_liquidity * (rewardPerLiquidity() - tokenRewardPerLiquidityPaid[tokenId]) / PRECISION); (#103)
-    uint _earned = _reward * _secondsInside / _maxSecondsElapsed; (#104)
-    rewardRate = amount / DURATION; (#217)
-    rewardRate = (amount + _leftover) / DURATION; (#222)
+   return rewardPerLiquidityStored + ((lastTimeRewardApplicable() - lastUpdateTime) * rewardRate * PRECISION / totalLiquidity); (#73)
+   uint _reward = (_liquidity * (rewardPerLiquidity() - tokenRewardPerLiquidityPaid[tokenId]) / PRECISION); (#103)
+   uint _earned = _reward * _secondsInside / _maxSecondsElapsed; (#104)
+   rewardRate = amount / DURATION; (#217)
+   rewardRate = (amount + _leftover) / DURATION; (#222)
 
 
 ## WARNING
 # Constructor lacks a zero-check on:
-  reward = _reward; (#56)
-  pool = _pool; (#57)
+   reward = _reward; (#56)
+   pool = _pool; (#57)
   
 ## COMMENT
-# The Approve() function is not specified in the contract, but it must be used for the deposit() function.
+* The Approve() function is not specified in the contract, but it must be used for the deposit() function.
 
 ## Results
-# 9 vulnerabilities and 1 wish
+* 9 vulnerabilities and 1 wish
 
 ### Conclusion
-# This is a well-protected smart contract, but it needs some security update.
+* This is a well-protected smart contract, but it needs some security update.
