@@ -78,15 +78,30 @@ Based on the feedback received from the Customer's team regarding the list of fi
 ## Report
 
 ### CRITICAL
+* the modifier update(uint tokenId) {...} is too long. The modifier should only be used for checks.
 
 ### MAJOR
+* Reentrancy, amount0 and amount1 are not zeroed and can be summed forever:
+   earned0 += amount0; (#84)
+   earned1 += amount1; (#85)
+* Multiplication on the result of a division:
+  return rewardPerLiquidityStored + ((lastTimeRewardApplicable() - lastUpdateTime) * rewardRate * PRECISION / totalLiquidity); (#73)
+  uint _reward = (_liquidity * (rewardPerLiquidity() - tokenRewardPerLiquidityPaid[tokenId]) / PRECISION); (#103)
+  uint _earned = _reward * _secondsInside / _maxSecondsElapsed; (#104)
+  rewardRate = amount / DURATION; (#217)
+  rewardRate = (amount + _leftover) / DURATION; (#222)
+
 
 ### WARNING
-
+* Constructor lacks a zero-check on:
+  reward = _reward; (#56)
+  pool = _pool; (#57)
+  
 ### COMMENT
+* The Approve() function is not specified in the contract, but it must be used for the deposit() function.
 
 ## Results
-
-### Executive summary
+9 vulnerabilities and 1 wish
 
 ### Conclusion
+This is a well-protected smart contract, but it needs some security update.
