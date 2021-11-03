@@ -81,7 +81,7 @@ Based on the feedback received from the Customer's team regarding the list of fi
 ### Reentrancy, amount0 and amount1 are not zeroed and can be summed forever:
  * earned0 += amount0; (#84)
  * earned1 += amount1; (#85)
-Multiplication on the result of a division:
+### Multiplication on the result of a division:
  * return rewardPerLiquidityStored + ((lastTimeRewardApplicable() - lastUpdateTime) * rewardRate * PRECISION / totalLiquidity); (#73)
  * uint _reward = (_liquidity * (rewardPerLiquidity() - tokenRewardPerLiquidityPaid[tokenId]) / PRECISION); (#103)
  * uint _earned = _reward * _secondsInside / _maxSecondsElapsed; (#104)
