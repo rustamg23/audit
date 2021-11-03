@@ -41,6 +41,7 @@ Eliminate typical vulnerabilities (e.g. reentrancy, gas limit, flashloan attacks
 ```
 Stage goal: 
 Detection of inconsistencies with the desired model
+```
 
 ### 4. Bug fixing & re-check.
 # Client fixes or comments on every issue.
