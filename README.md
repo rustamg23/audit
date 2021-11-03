@@ -1,37 +1,33 @@
 # StakingRewardV3 Security Audit Report
 
-###### tags: `Akropolis`
-
 ## Introduction
 
 ### Project overview
 
 ### Scope of the Audit
 The scope of the audit includes the following smart contracts at:
- https://github.com/keep3r-network/StakingRewardsV3/blob/13ecc6966ae1a413f62224382bfd4d64b1a22351/contracts/StakingRewardsV3-1.sol
+https://github.com/keep3r-network/StakingRewardsV3/blob/13ecc6966ae1a413f62224382bfd4d64b1a22351/contracts/StakingRewardsV3-1.sol
 The audited commit identifier is `13ecc6966ae1a413f62224382bfd4d64b1a22351`
 
 ## Security Assessment Methodology
 
-A group of auditors are involved in the work on the audit who check the provided source code independently of each other in accordance with the methodology described below:
+Only one auditor analyzes this contract according to the methodology described below:
 
 ### 1. Project architecture review.
 
-* Try to imagine project documentation.
-* General code review.
-* Reverse research and study of the architecture of the code based on the source code only.
-* Mockup prototyping.
-
+# An attempt to imagine project documentation.
+# General code review.
+# Reverse research and study of the architecture of the code based on the source code only.
 ```
 Stage goals:
-* Building an independent view of the project's architecture and identifying logical flaws in the code.
+# Building an independent view of the project's architecture and identifying logical flaws in the code.
 ```
 
 ### 2. Checking the code against the checklist of known vulnerabilities.
 
 * Manual code check for vulnerabilities from the company's internal checklist.
 * The company's checklist is constantly updated based on the analysis of hacks, research and audit of the clients’ code.
-* Checking with static analyzers (i.e Slither, Mythril, etc).
+* Checking with static analyzers (i.e Slither).
 
 ```
 Stage goal: 
@@ -81,27 +77,27 @@ Based on the feedback received from the Customer's team regarding the list of fi
 * the modifier update(uint tokenId) {...} is too long. The modifier should only be used for checks.
 
 ### MAJOR
-* Reentrancy, amount0 and amount1 are not zeroed and can be summed forever:
+# Reentrancy, amount0 and amount1 are not zeroed and can be summed forever:
    earned0 += amount0; (#84)
    earned1 += amount1; (#85)
-* Multiplication on the result of a division:
-  return rewardPerLiquidityStored + ((lastTimeRewardApplicable() - lastUpdateTime) * rewardRate * PRECISION / totalLiquidity); (#73)
-  uint _reward = (_liquidity * (rewardPerLiquidity() - tokenRewardPerLiquidityPaid[tokenId]) / PRECISION); (#103)
-  uint _earned = _reward * _secondsInside / _maxSecondsElapsed; (#104)
-  rewardRate = amount / DURATION; (#217)
-  rewardRate = (amount + _leftover) / DURATION; (#222)
+# Multiplication on the result of a division:
+    return rewardPerLiquidityStored + ((lastTimeRewardApplicable() - lastUpdateTime) * rewardRate * PRECISION / totalLiquidity); (#73)
+    uint _reward = (_liquidity * (rewardPerLiquidity() - tokenRewardPerLiquidityPaid[tokenId]) / PRECISION); (#103)
+    uint _earned = _reward * _secondsInside / _maxSecondsElapsed; (#104)
+    rewardRate = amount / DURATION; (#217)
+    rewardRate = (amount + _leftover) / DURATION; (#222)
 
 
 ### WARNING
-* Constructor lacks a zero-check on:
+# Constructor lacks a zero-check on:
   reward = _reward; (#56)
   pool = _pool; (#57)
   
 ### COMMENT
-* The Approve() function is not specified in the contract, but it must be used for the deposit() function.
+# The Approve() function is not specified in the contract, but it must be used for the deposit() function.
 
 ## Results
-9 vulnerabilities and 1 wish
+# 9 vulnerabilities and 1 wish
 
 ### Conclusion
-This is a well-protected smart contract, but it needs some security update.
+# This is a well-protected smart contract, but it needs some security update.
