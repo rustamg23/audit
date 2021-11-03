@@ -75,7 +75,7 @@ Based on the feedback received from the Customer's team regarding the list of fi
 ## Report
 
 ## CRITICAL
-### the modifier update(uint tokenId) {...} is too long. The modifier should only be used for checks.
+ *  the modifier update(uint tokenId) {...} is too long. The modifier should only be used for checks.
 
 ## MAJOR
 ### Reentrancy, amount0 and amount1 are not zeroed and can be summed forever:
