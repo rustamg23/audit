@@ -44,8 +44,8 @@ Detection of inconsistencies with the desired model
 ```
 
 ### 4. Bug fixing & re-check.
-# Client fixes or comments on every issue.
-# Upon completion of the bug fixing, the auditors double-check each fix and set the statuses with a link to the fix.
+ Client fixes or comments on every issue.
+ Upon completion of the bug fixing, the auditors double-check each fix and set the statuses with a link to the fix.
 
 ```
 Stage goal:
@@ -74,10 +74,10 @@ Based on the feedback received from the Customer's team regarding the list of fi
 
 ## Report
 
-### CRITICAL
+## CRITICAL
 # the modifier update(uint tokenId) {...} is too long. The modifier should only be used for checks.
 
-### MAJOR
+## MAJOR
 # Reentrancy, amount0 and amount1 are not zeroed and can be summed forever:
    earned0 += amount0; (#84)
    earned1 += amount1; (#85)
@@ -89,12 +89,12 @@ Based on the feedback received from the Customer's team regarding the list of fi
     rewardRate = (amount + _leftover) / DURATION; (#222)
 
 
-### WARNING
+## WARNING
 # Constructor lacks a zero-check on:
   reward = _reward; (#56)
   pool = _pool; (#57)
   
-### COMMENT
+## COMMENT
 # The Approve() function is not specified in the contract, but it must be used for the deposit() function.
 
 ## Results
